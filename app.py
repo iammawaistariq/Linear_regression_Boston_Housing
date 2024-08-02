@@ -10,7 +10,6 @@ app = Flask(__name__)
 model = pickle.load(open('Linear_Regression_Model.pkl','rb'))
 reg_sc = pickle.load(open('Linear_Regression_sc_Model.pkl','rb'))
 
-
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -26,6 +25,15 @@ def predict_api():
     output = model.predict(new_data)
     print("Predicted Output",output[0])
     return jsonify(output[0])
+
+
+@app.route('/predict',methods=['POST'])
+def predict():
+    data = [float(x) for x in request.form.values()]
+    sc_data = reg_sc.transform(np.array(data).reshape(1,-1))
+    output = model.predict(sc_data)[0]
+
+    return render_template("home.html",prediction_text = "The preidcted House Price is:{}".format(output))
 
 if __name__ == "__main__":
     app.run(debug=True)
