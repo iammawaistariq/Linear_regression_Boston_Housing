@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      FLASK_ENV: development
+    command: gunicorn --workers=4 --bind 0.0.0.0:5000 app:app
+
+  model-train:
+    image: python:3.12
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: python train_model.py
+
+networks:
+  default:
+    driver: bridge
